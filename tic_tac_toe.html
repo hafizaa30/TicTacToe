@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body { 
+        text-align: center; 
+        font-family: Verdana, Geneva, sans-serif; 
+        background-color: #5A6C5A;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        }
+        .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        }
+        .game-board { 
+        display: grid; 
+        grid-template-columns: repeat(3, 110px); 
+        grid-gap: 8px; 
+        margin: 25px auto; 
+        width: 350px;
+        color: #C2D1A8;
+        }
+        .box {
+         width: 110px; 
+         height: 110px; 
+         font-size: 2.5em;
+         border: 2px solid #ECE8D9; 
+         display: flex; 
+         align-items: center; 
+         justify-content: center; 
+         cursor: pointer; 
+        }
+        .box.disabled { 
+            pointer-events: none; 
+        }
+        .reset-button{
+            width: 130px;
+            height: 45px;
+            background-color: #4E8A74;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .reset-button:hover {
+            background-color: #3B6F5E;
+        }
+        h1{
+            font-family: 'Georgia', serif;
+            color: #F4EDE3;
+            font-size: 42px;
+            margin-bottom: 12px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        #status{
+            font-family: Georgia, serif;
+            font-size: 26px;
+            font-weight: bold;
+            color: #EDE3CD;
+            margin: 12px auto;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            width: fit-content;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tic Tac Toe</h1>
+        <div id="status">Player X's turn</div>
+        <div class="game-board" id="gameBoard"></div>
+        <button class="reset-button" onclick="restartGame()">RESET GAME</button>
+    </div>
+    <script>
+        let gameGrid = ["", "", "", "", "", "", "", "", ""];
+        let activePlayer = "X";
+        let isGameOver = false;
+        const gameBoard = document.getElementById("gameBoard");
+        const statusDisplay = document.getElementById("status");
+        const winningCombos = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function determineWinner() {
+            for (let combo of winningCombos) {
+                let [x, y, z] = combo;
+                if (gameGrid[x] && gameGrid[x] === gameGrid[y] && gameGrid[x] === gameGrid[z]) {
+                    statusDisplay.innerText = `Player ${gameGrid[x]} wins!`;
+                    document.querySelectorAll(".box").forEach(box => box.classList.add("disabled"));
+                    isGameOver = true;
+                    return;
+                }
+            }
+            if (!gameGrid.includes("")) {
+                statusDisplay.innerText = "It's a draw!";
+                isGameOver = true;
+            }
+        }
+
+        function boxClick(index) {
+            if (!gameGrid[index] && !isGameOver) {
+                gameGrid[index] = activePlayer;
+                displayBoard();
+                determineWinner();
+                if (!isGameOver) {
+                    activePlayer = activePlayer === "X" ? "O" : "X";
+                    statusDisplay.innerText = `Player ${activePlayer}'s turn`;
+                }
+            }
+        }
+
+        function displayBoard() {
+            gameBoard.innerHTML = "";
+            gameGrid.forEach((val, i) => {
+                let box = document.createElement("div");
+                box.className = "box";
+                if (val) box.classList.add("disabled");
+                box.innerText = val;
+                box.onclick = () => boxClick(i);
+                gameBoard.appendChild(box);
+            });
+        }
+
+        function restartGame() {
+            gameGrid.fill("");
+            activePlayer = "X";
+            isGameOver = false;
+            statusDisplay.innerText = "Player X's turn";
+            displayBoard();
+        }
+
+        displayBoard();
+    </script>
+</body>
+</html>
